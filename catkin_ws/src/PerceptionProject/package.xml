@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<package format="2">
+  <name>PerceptionProject</name>
+  <version>1.3.2</version>
+  <description>
+    Its the perception project what do you want from me
+  </description>
+  <license>Apache 2.0</license>
+  <author email="tbirney@umd.edu">Tom</author>
+  <maintainer email="tbirney@umd.edu">Tom </maintainer>
+  <buildtool_depend>catkin</buildtool_depend>
+  <depend>roscpp</depend>
+  <depend>std_msgs</depend>
+  <depend>sensor_msgs</depend>
+  <depend>geometry_msgs</depend>
+  <depend>nav_msgs</depend>
+  <depend>tf</depend>
+  <depend>gazebo_ros</depend>
+  <depend>actionlib</depend>
+  <depend>move_base_msgs</depend>
+  <exec_depend>gazebo</exec_depend>
+  <exec_depend>turtlebot3_description</exec_depend>
+  <export>
+    <gazebo_ros gazebo_media_path="${prefix}"/>
+    <gazebo_ros gazebo_model_path="${prefix}/models"/>
+  </export>
+</package>

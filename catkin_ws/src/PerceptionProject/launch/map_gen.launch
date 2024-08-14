@@ -1,0 +1,43 @@
+<launch>
+
+    <!-- Set args for later in the launch file -->
+    <arg name="model" default="$(env TURTLEBOT3_MODEL)" doc="model type [burger, waffle, waffle_pi]"/>
+    <arg name="slam_methods" default="gmapping" doc="slam type [gmapping, cartographer, hector, karto, frontier_exploration]"/>
+    <arg name="configuration_basename" default="turtlebot3_lds_2d.lua"/>
+    <arg name="x_pos" default="-2.0"/>
+    <arg name="y_pos" default="-0.5"/>
+    <arg name="z_pos" default="0.0"/>
+    <arg name="world_name" default = "aruco_world.world"/>
+
+    <!-- load our world. Right Now its just the default gazebo world -->
+    <include file="$(find gazebo_ros)/launch/empty_world.launch">
+        <arg name="world_name" value="$(find PerceptionProject)/worlds/$(arg world_name)"/>
+        <arg name="paused" value="false"/>
+        <arg name="use_sim_time" value="true"/>
+        <arg name="gui" value="true"/>
+        <arg name="headless" value="false"/>
+        <arg name="debug" value="false"/>
+    </include>
+
+    <!-- Load in the turtlebot with lidar and rgbd cam -->
+    <param name="robot_description" command="$(find xacro)/xacro --inorder $(find PerceptionProject)/urdf/turtlebot3_with_camera.urdf.xacro" />
+
+    <!-- This fixes the broken link transformations in rviz -->
+    <arg name="use_tf_static" default="false"/> 
+    <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" >
+        <param name="use_tf_static" value="$(arg use_tf_static)"/>
+    </node>
+
+    <!-- Poach the gmapping call from turtlebot3 slam -->
+    <include file="$(find turtlebot3_slam)/launch/turtlebot3_$(arg slam_methods).launch">
+        <arg name="model" value="$(arg model)"/>
+        <arg name="configuration_basename" value="$(arg configuration_basename)"/>
+    </include>
+
+    <!-- Launch Gazebo, doesn't need to be here but I want it -->
+    <node pkg="gazebo_ros" type="spawn_model" name="spawn_urdf" args="-urdf -model turtlebot3_$(arg model) -x $(arg x_pos) -y $(arg y_pos) -z $(arg z_pos) -param robot_description" />
+    <!-- Run RVIZ so we can see the cost map -->
+    <node name="rviz" pkg="rviz" type="rviz" args="-d $(find PerceptionProject)/rviz/turtlebot3.rviz"/>
+
+    
+</launch>
